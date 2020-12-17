@@ -7,6 +7,7 @@ let start = false;
 let shouldStopMusic = false;
 let firstClick = true;
 let secondClick = false;
+let touchEvent = 'ontouchstart' in window ? 'touchstart' : 'dblclick';
 let music = new Audio('NeverGonnaGiveYouUpOriginal.mp3');
 music.onended = function () { console.log('music done'), start = true, firstClick = false, shouldStopMusic=false, secondClick=true, console.log('start is:', start) }
 let mouse2 = {
@@ -119,7 +120,7 @@ function drawImage() {
             location.reload()
         });
 }
-window.addEventListener('dblclick', function(){
+window.addEventListener(touchEvent, function(){
     if (secondClick) {
         console.log('second click running')
         music.play();
