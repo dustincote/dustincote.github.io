@@ -38,7 +38,7 @@ function drawImage() {
                 this.color = color,
                 this.size = .8,
                 this.baseX = x + (canvas2.width / 2 - (imageWidth / 2)),
-                this.baseY = y + (canvas2.height / 2 - (imageHeight / 2)),
+                this.baseY = y + (canvas2.height / 1.3 - (imageHeight / 1.3)),
                 this.density = (Math.random() * 120) + 2;
         }
         draw() {
@@ -154,24 +154,56 @@ window.addEventListener('load', (event) => {
     drawImage()
 })
 
+function rickRoll(){
+    start = !start;
+    setTimeout((event) => {
+        console.log('trying to play', start, 'what the heck')
+        music.play();
+        start = !start;
+        firstClick = false;
+    }, 2200);
+    shouldStopMusic = true;
+}
+// a key map of allowed keys
+var allowedKeys = {
+    ArrowLeft: 'ArrowLeft',
+    ArrowUp: 'ArrowUp',
+    ArrowRight: 'ArrowRight',
+    ArrowDown: 'ArrowDown',
+    a: 'a',
+    b: 'b'
+};
 
-// const image1 = new Image();
-// image1.src= 'art1.jpeg';
-// image1.addEventListener('load', function(){
-//     ctx2.drawImage(image1, 0, 0);
-//     const scannedImage = ctx2.getImageData(0,0,canvas2.width, canvas2.height);
-//     console.log(scannedImage);
-//     const scannedData = scannedImage.data;
-//     for (let i=0; i< scannedData.length; i+=4){
-//         const total = scannedData[i] + scannedData[i+1] + scannedData[i+2];
-//         const averageColorValue = total/3;
-//         scannedData[i] = averageColorValue;
-//         scannedData[i+1] = averageColorValue;
-//         scannedData[i+2] = averageColorValue;
-//     }
-//     scannedImage.data = scannedData;
-//     ctx2.putImageData(scannedImage, 0, 0);
-// })
+// the 'official' Konami Code sequence
+var konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+
+// a variable to remember the 'position' the user has reached so far.
+var konamiCodePosition = 0;
+
+// add keydown event listener
+document.addEventListener('keydown', function (e) {
+    console.log(e.key)
+    // get the value of the key code from the key map
+    var key = allowedKeys[e.key];
+    // get the value of the required key from the konami code
+    var requiredKey = konamiCode[konamiCodePosition];
+
+    // compare the key with the required key
+    if (key == requiredKey) {
+        console.log('One key closer to the secret')
+        // move to the next key in the konami code sequence
+        konamiCodePosition++;
+
+        // if the last key is reached, activate cheats
+        if (konamiCodePosition == konamiCode.length) {
+            rickRoll();
+            konamiCodePosition = 0;
+        }
+    } else {
+        console.log('oops try again')
+        konamiCodePosition = 0;
+    }
+});
 
 
 

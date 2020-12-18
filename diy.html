@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="pointillismOne.css">
+</head>
+
+<body>
+    <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+    <canvas id='canvas4'></canvas>
+    <button id='export'>Download as PNG</button>
+    <button id='start'></button>
+    <button id='clear'>Clear Canvas</button>
+    <input type="range" min="0" max="360" value="0" class="slider" id="startColor" ><span>Starting Color: <span id='hueNumber'></span></span>
+    <input type="range" min="1" max="360" value="1" class="slider" id="colorNumbers" ><span>Number of Colors: <span id='numberOfColors'></span></span>
+    <p id='welcome'>Welcome to the DIY Generative Art Page. To get started choose a starting color hue number and how many colors you want, the higher the number the less variance in color as the color hue will increase by less.  Once you have selected a color and number of colors click the start drawing button.  If at anytime you want to stop drawing click the stop drawing button. You can download your creation by clicking Download as PNG.  You can clear the canvas at any time with the clear canvas button.  This message will disappear once you click start drawing.</p>
+    <script src="diy.js"></script>
+</body>
+
+</html>
