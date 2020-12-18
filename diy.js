@@ -12,12 +12,21 @@ const hueNumber = document.getElementById('hueNumber');
 hueNumber.innerHTML= startColor.value;
 const clearCanvas = document.getElementById('clear');
 const welcome = document.getElementById('welcome');
+const menuButton = document.getElementById('menuButton');
+const menu = document.getElementById('menu');
+let shouldShowMenu = true;
 
 numberOfColors.oninput = () => {
     numberOfColorsText.innerHTML = numberOfColors.value;
     numberToAdd = 360/numberOfColors.value;
     console.log(numberToAdd);
 }
+
+function showMenu (){
+   menu.classList.toggle('hide');
+}
+menuButton.addEventListener('click', showMenu);
+
 
 function exportPicture() {
     // IE/Edge support (png only)

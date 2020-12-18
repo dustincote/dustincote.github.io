@@ -12,6 +12,8 @@
     <title></title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
     <link rel="stylesheet" href="pointillismOne.css">
 </head>
 
@@ -20,12 +22,36 @@
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
     <canvas id='canvas4'></canvas>
-    <button id='export'>Download as PNG</button>
-    <button id='start'></button>
-    <button id='clear'>Clear Canvas</button>
-    <input type="range" min="0" max="360" value="0" class="slider" id="startColor" ><span>Starting Color: <span id='hueNumber'></span></span>
-    <input type="range" min="1" max="360" value="1" class="slider" id="colorNumbers" ><span>Number of Colors: <span id='numberOfColors'></span></span>
-    <p id='welcome'>Welcome to the DIY Generative Art Page. To get started choose a starting color hue number and how many colors you want, the higher the number the less variance in color as the color hue will increase by less.  Once you have selected a color and number of colors click the start drawing button.  If at anytime you want to stop drawing click the stop drawing button. You can download your creation by clicking Download as PNG.  You can clear the canvas at any time with the clear canvas button.  This message will disappear once you click start drawing.</p>
+    <button class='btn btn-primary m-3' id='menuButton'>Menu</button>
+    <div class="container-fluid" id='menu'>
+        <div class='row'>
+            <div class="col-sm-6 text-left">
+                <button class='btn btn-primary m-1' id='export'>Download as PNG</button>
+                <button class='btn btn-primary m-1' id='start'></button>
+                <button class='btn btn-primary m-1' id='clear'>Clear Canvas</button>
+            </div>
+            <div class="col-sm-10 text-left">
+                <label for='startColor'>Starting Color: <span id='hueNumber'></span></label>
+                <div class='col-sm-10'>
+                    <input width="inherit" type="range" min="0" max="359" value="0" class="form-range ml-1 mr-1"
+                        id="startColor">
+                </div>
+            </div>
+            <div class="col-sm-10 text-left">
+                <span>Number of Colors: <span id='numberOfColors'></span></span>
+                <div class='col-sm-10'>
+                    <input width="inherit" type="range" min="1" max="360" value="1" class="form-range "
+                        id="colorNumbers">
+                </div>
+            </div>
+        </div>
+        <p id='welcome'>Welcome to the DIY Generative Art Page. To get started choose a starting color hue number and
+            how many colors you want, the higher the number the less variance in color as the color hue will increase by
+            less. Once you have selected a color and number of colors click the start drawing button. If at anytime you
+            want to stop drawing click the stop drawing button. You can download your creation by clicking Download as
+            PNG. You can clear the canvas at any time with the clear canvas button. This message will disappear once you
+            click start drawing. Click Menu to toggle the Menu.</p>
+    </div>
     <script src="diy.js"></script>
 </body>
 
