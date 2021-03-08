@@ -64,78 +64,7 @@ let drawing = false;
 let shouldClearText = true;
 startColor.oninput = () => { hueNumber.innerHTML = startColor.value, color= Number(startColor.value) }
 
-// let particleArray = [];
-// const mouse = {
-//     x: null,
-//     y: null,
-//     radius: 40
-// }
-// ctx.fillStyle = 'white';
-// ctx.font = '30px Verdana';
-// ctx.fillText('Welcome to the DIY Generative Art.', 100,100);
-// ctx.fillText('To make art simply hold your mouse button down and move the mouse.', 100, 150);
-// ctx.fillText('each time you release mouse and click again the objects will be a different color.', 100, 200);
-// ctx.fillText('click the mouse once to remove this message.', 100, 250);
-// const textCoordinates = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-// class Particle {
-//     constructor(x, y) {
-//         this.x = x;
-//         this.y = y;
-//         this.size = 2;
-//         this.baseX = x;
-//         this.baseY = y;
-//         this.density = (Math.random() * 30) + 1;
-//     }
-//     draw() {
-//         ctx.fillStyle = 'white';
-//         ctx.beginPath();
-//         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-//         ctx.closePath();
-//         ctx.fill();
-//     }
-//     update() {
-//         let dx = mouse.x - this.x;
-//         let dy = mouse.y - this.y;
-//         let distance = Math.sqrt(dx * dx + dy * dy);
-//         let forceDirectionX = dx / distance;
-//         let forceDirectionY = dy / distance;
-//         let maxDistance = mouse.radius;
-//         let force = (maxDistance - distance) / maxDistance;
-//         let directionX = forceDirectionX * force * this.density;
-//         let directionY = forceDirectionY * force * this.density;
-//         if (distance < mouse.radius + this.size) {
-//             this.x -= directionX;
-//             this.y -= directionY;
-//         } else {
-//             if (this.x !== this.baseX) {
-//                 let dx = this.x - this.baseX;
-//                 this.x -= dx / 10;
-//             }
-//             if( this.y !== this.baseY){
-//                 let dy = this.y - this.baseY;
-//                 this.y -= dy/10;
-//             }
-//         }
-//     }
-// }
-
-// function init() {
-//     particleArray = [];
-//     for(let y = 0, y2= textCoordinates.height; y< y2; y++){
-//         for( let x = 0, x2 = textCoordinates.width; x< x2; x++){
-
-//         }
-//     }
-// }
-// init();
-
-// function animate() {
-//     ctx.clearRect(0, 0, canvas.width, canvas.height);
-//     for (particle of particleArray) {
-//         particle.draw();
-//     }
-// }
 
 
 class Root {
