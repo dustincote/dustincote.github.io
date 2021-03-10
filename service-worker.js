@@ -1,4 +1,4 @@
-var cacheName = "todo-cache-v2";
+var cacheName = "todo-cache-v3";
 var filesToCache = [
     "/svelteToDo",
     "build/bundle.css",
