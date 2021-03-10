@@ -1,6 +1,6 @@
 var cacheName = "todo-cache-v2";
 var filesToCache = [
-    "/",
+    "/svelteToDo",
     "build/bundle.css",
     "build/bundle.js",
     "build/bundle.js.map",
