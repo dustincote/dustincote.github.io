@@ -3,6 +3,8 @@ const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 let particleArray = [];
+let particleMap = new Map();
+let particlesToCheck = [];
 let start = true;
 let firstClick = true;
 let shouldStop = false;
@@ -18,11 +20,27 @@ music.onended = function () {
 let mouse = {
   x: null,
   y: null,
-  radius: 30,
+  radius: 15,
 };
 window.addEventListener("mousemove", function (event) {
+  //   particlesToCheck = [];
   mouse.x = event.x + canvas.clientLeft / 2;
   mouse.y = event.y + canvas.clientLeft / 2;
+  //   console.log("mouseCoords", mouse.x, mouse.y);
+  //   let maxX = mouse.x + 15;
+  //   let minX = mouse.x - 15;
+  //   let maxY = mouse.y + 15;
+  //   let minY = mouse.y - 15;
+  //   for (let x = minX; x <= maxX; x++) {
+  //     for (let y = minY; y <= maxY; y++) {
+  //       let particle = particleMap.get(`${x}.${y}`);
+  //       particlesToCheck.push(particle);
+  //     }
+  //   }
+  //   console.log(particlesToCheck);
+  //   particlesToCheck.forEach((p) => {
+  //     if (p) p.update();
+  //   });
 });
 
 function drawImage() {
@@ -39,7 +57,7 @@ function drawImage() {
         // this.x = x + (canvas.width / 2 - (imageWidth / 2)) + (Math.cos(Math.random() * 10) * 200),
         //     this.y = y + (canvas.height / 2 - (imageHeight / 2)) + (Math.sin(Math.random() * 10) * 200),
         (this.color = color),
-        (this.size = 0.85),
+        (this.size = 1),
         (this.baseX = x + (canvas.width / 2 - imageWidth / 2)),
         (this.baseY = y + (canvas.height / 2 - imageHeight / 2)),
         (this.density = Math.random() * 120 + 2);
@@ -52,6 +70,7 @@ function drawImage() {
     }
 
     update() {
+      //   particleMap.delete(`${Math.floor(this.x)}.${Math.floor(this.y)}`);
       ctx.fillStyle = this.color;
 
       let dx = mouse.x - this.x;
@@ -97,10 +116,10 @@ function drawImage() {
       }
 
       this.draw();
+      //   particleMap.set(`${Math.floor(this.x)}.${Math.floor(this.y)}`, this);
     }
   }
   function init() {
-    particleArray = [];
     for (let y = 0, y2 = data.height; y < y2; y++) {
       for (let x = 0, x2 = data.width; x < x2; x++) {
         if (data.data[y * 4 * data.width + x * 4 + 3] > 128) {
@@ -121,12 +140,13 @@ function drawImage() {
   }
   function animate() {
     requestAnimationFrame(animate);
+    clearRect();
+
+    particleArray.forEach((p) => p.update());
+  }
+  function clearRect() {
     ctx.fillStyle = "rgba(0,0,0,1)";
     ctx.fillRect(0, 0, innerWidth, innerHeight);
-
-    for (let i = 0; i < particleArray.length; i++) {
-      particleArray[i].update();
-    }
   }
   init();
   animate();
