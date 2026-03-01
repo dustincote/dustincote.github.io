@@ -51,6 +51,25 @@ const WAVE_AMP = 40;
 const WAVE_FREQ = 0.015;
 const WAVE_SPEED = 0.05;
 
+// Golden spiral flow mode — pixels gather to center then stream outward
+let goldenFlowMode = false;
+let gfProgress;
+let gfOrder;
+let gfNextRelease = 0;
+let gfRecycling = false;
+let gfGatherPhase = false;
+let gfGatherTimer = 0;
+let gfRotation = 0;
+let gfRecyclePtr = 0;
+
+const GF_SPEED = 0.05;
+const GF_SCALE = 20;
+const GF_RELEASE_RATE = 1;
+const GF_GATHER_FRAMES = 90;
+const GF_GATHER_LERP = 0.08;
+const GF_ROTATION_SPEED = 0.00004;
+const GF_TRAIL_FADE = 245;       // integer fade factor out of 256 (~0.957)
+
 // Single ImageData buffer reused every frame
 let imageData, pixels;
 
@@ -150,6 +169,25 @@ function initParticles() {
     computeSpiralTargets();
 }
 
+function initGoldenFlow() {
+    const n = particleCount;
+    gfProgress = new Float32Array(n);
+    gfOrder = new Uint32Array(n);
+    for (let i = 0; i < n; i++) gfOrder[i] = i;
+    // Sort by hue so same-color particles release consecutively
+    gfOrder.sort(function (a, b) {
+        return rgbToHue(colorR[a], colorG[a], colorB[a])
+             - rgbToHue(colorR[b], colorG[b], colorB[b]);
+    });
+    gfNextRelease = 0;
+    gfRecycling = false;
+    gfGatherPhase = true;
+    gfGatherTimer = 0;
+    gfRotation = 0;
+    gfRecyclePtr = 0;
+    gfProgress.fill(0);
+}
+
 function computeSpiralTargets() {
     const w = canvas.width;
     const h = canvas.height;
@@ -207,6 +245,9 @@ function animate() {
     const isWave = waveMode;
     const isStart = start;
     const isSpiralMode = spiralMode;
+    const isGoldenFlow = goldenFlowMode;
+    const cx = w / 2;
+    const cy = h / 2;
 
     // Advance wave time
     if (isWave) waveTime += WAVE_SPEED;
@@ -217,12 +258,50 @@ function animate() {
         computeSpiralTargets();
     }
 
-    // Clear pixel buffer to opaque black (ABGR little-endian)
-    pixels.fill(0xFF000000);
+    // Golden flow: release/recycle particles and apply trail fade
+    if (isGoldenFlow) {
+        gfRotation += GF_ROTATION_SPEED;
+        if (gfGatherPhase) {
+            gfGatherTimer++;
+            if (gfGatherTimer >= GF_GATHER_FRAMES) gfGatherPhase = false;
+        } else if (!gfRecycling) {
+            const end = Math.min(gfNextRelease + GF_RELEASE_RATE, n);
+            for (let j = gfNextRelease; j < end; j++) {
+                const idx = gfOrder[j];
+                gfProgress[idx] = ((j - gfNextRelease) / GF_RELEASE_RATE) * GF_SPEED + 0.1;
+            }
+            gfNextRelease = end;
+            if (gfNextRelease >= n) gfRecycling = true;
+        } else {
+            for (let j = 0; j < GF_RELEASE_RATE; j++) {
+                const idx = gfOrder[gfRecyclePtr];
+                gfProgress[idx] = (j / GF_RELEASE_RATE) * GF_SPEED + 0.1;
+                posX[idx] = cx;
+                posY[idx] = cy;
+                gfRecyclePtr = (gfRecyclePtr + 1) % n;
+            }
+        }
+        // Trail: fade non-black pixels instead of clearing
+        const fade = GF_TRAIL_FADE;
+        for (let p = 0, len = pixels.length; p < len; p++) {
+            const c = pixels[p];
+            if (c === 0xFF000000) continue;
+            const r = ((c & 0xFF) * fade) >> 8;
+            const g = (((c >> 8) & 0xFF) * fade) >> 8;
+            const b = (((c >> 16) & 0xFF) * fade) >> 8;
+            pixels[p] = (r | g | b) ? (0xFF000000 | (b << 16) | (g << 8) | r) : 0xFF000000;
+        }
+    } else {
+        // Clear pixel buffer to opaque black (ABGR little-endian)
+        pixels.fill(0xFF000000);
+    }
 
     for (let i = 0; i < n; i++) {
         let px = posX[i];
         let py = posY[i];
+
+        // Skip unreleased golden flow particles
+        if (isGoldenFlow && !gfGatherPhase && gfProgress[i] <= 0) continue;
 
         // Squared-distance avoids Math.sqrt unless particle is near mouse
         const dx = mx - px;
@@ -236,6 +315,17 @@ function animate() {
                 const fd = force * density[i] * 0.9;
                 px -= (dx / dist) * fd;
                 py -= (dy / dist) * fd;
+            }
+        } else if (isGoldenFlow) {
+            if (gfGatherPhase) {
+                px += (cx - px) * GF_GATHER_LERP;
+                py += (cy - py) * GF_GATHER_LERP;
+            } else {
+                gfProgress[i] += GF_SPEED;
+                const angle = gfProgress[i] * GOLDEN_ANGLE + gfRotation;
+                const r = GF_SCALE * Math.sqrt(gfProgress[i]);
+                px = cx + r * Math.cos(angle);
+                py = cy + r * Math.sin(angle);
             }
         } else if (isSpiralMode) {
             px -= (px - spiralX[i]) * SPIRAL_LERP;
@@ -293,8 +383,55 @@ window.addEventListener('click', function () {
 const png = new Image();
 png.src = "sundayAfternoon.jpg";
 
+// Image registry and swap logic
+const imageRegistry = [{ name: "Sunday Afternoon", src: "sundayAfternoon.jpg" }];
+let animating = false;
+
+function loadImage(src) {
+    spiralMode = false;
+    goldenFlowMode = false;
+    waveMode = false;
+    start = true;
+    png.src = src;
+    png.onload = function () {
+        initParticles();
+        if (!animating) { animating = true; animate(); }
+    };
+}
+
+const fileInput = document.getElementById('file-input');
+const uploadBtn = document.getElementById('upload-btn');
+const imageSelect = document.getElementById('image-select');
+
+uploadBtn.addEventListener('click', function () { fileInput.click(); });
+
+fileInput.addEventListener('change', function () {
+    const file = this.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        const entry = { name: file.name, src: e.target.result };
+        imageRegistry.push(entry);
+        const opt = document.createElement('option');
+        opt.value = String(imageRegistry.length - 1);
+        opt.textContent = entry.name;
+        imageSelect.appendChild(opt);
+        imageSelect.value = opt.value;
+        loadImage(entry.src);
+    };
+    reader.readAsDataURL(file);
+    this.value = '';
+});
+
+imageSelect.addEventListener('change', function () {
+    const idx = Number(this.value);
+    const entry = imageRegistry[idx] || imageRegistry[0];
+    loadImage(entry.src);
+});
+
 window.addEventListener('load', function () {
     initParticles();
+    animating = true;
     animate();
 });
 
@@ -312,9 +449,17 @@ window.addEventListener('mouseout', function () {
 window.addEventListener('keydown', function (event) {
     if (event.key === 'f' || event.key === 'F') {
         spiralMode = !spiralMode;
+        if (spiralMode) goldenFlowMode = false;
     }
     if (event.key === 'w' || event.key === 'W') {
         waveMode = !waveMode;
+    }
+    if (event.key === 'g' || event.key === 'G') {
+        goldenFlowMode = !goldenFlowMode;
+        if (goldenFlowMode) {
+            spiralMode = false;
+            initGoldenFlow();
+        }
     }
 });
 

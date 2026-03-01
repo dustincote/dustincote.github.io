@@ -36,3 +36,56 @@ body {
 .hide{
     display: none;
 }
+
+#image-panel {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 10;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    opacity: 0.15;
+    transition: opacity 0.3s;
+}
+
+#image-panel:hover {
+    opacity: 0.9;
+}
+
+#image-select {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ccc;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 13px;
+    cursor: pointer;
+    outline: none;
+}
+
+#image-select:hover,
+#image-select:focus {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+#upload-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ccc;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    width: 28px;
+    height: 28px;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#upload-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    color: #fff;
+}
